@@ -434,11 +434,6 @@ if ( ! class_exists( 'WPSEO_Meta' ) ) {
 					unset( $robots_adv );
 
 
-					/* Don't show the breadcrumb title field if breadcrumbs aren't enabled */
-					if ( $options['breadcrumbs-enable'] !== true ) {
-						unset( $field_defs['bctitle'] );
-					}
-
 					/* Don't show the xml sitemap fields, if xml sitemaps aren't enabled */
 					if ( $options['enablexmlsitemap'] !== true ) {
 						unset(

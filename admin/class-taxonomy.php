@@ -176,9 +176,7 @@ if ( ! class_exists( 'WPSEO_Taxonomy' ) ) {
 
 			$this->form_row( 'wpseo_canonical', __( 'Canonical', 'wordpress-seo' ), __( 'The canonical link is shown on the archive page for this term.', 'wordpress-seo' ), $tax_meta );
 
-			if ( $options['breadcrumbs-enable'] === true ) {
-				$this->form_row( 'wpseo_bctitle', __( 'Breadcrumbs Title', 'wordpress-seo' ), sprintf( __( 'The Breadcrumbs title is used in the breadcrumbs where this %s appears.', 'wordpress-seo' ), $term->taxonomy ), $tax_meta );
-			}
+			$this->form_row( 'wpseo_bctitle', __( 'Breadcrumbs Title', 'wordpress-seo' ), sprintf( __( 'The Breadcrumbs title is used in the breadcrumbs where this %s appears.', 'wordpress-seo' ), $term->taxonomy ), $tax_meta );
 
 			/* Don't show the robots index field if it's overruled by a blog-wide option */
 			if ( '0' != get_option( 'blog_public' ) ) {

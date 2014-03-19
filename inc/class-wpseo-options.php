@@ -1847,7 +1847,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 			'breadcrumbs-blog-remove'   => false,
 			'breadcrumbs-boldlast'      => false,
 			'breadcrumbs-archiveprefix' => '', // text field
-			'breadcrumbs-enable'        => false,
+			'breadcrumbs-enable'        => true,
 			'breadcrumbs-home'          => '', // text field
 			'breadcrumbs-prefix'        => '', // text field
 			'breadcrumbs-searchprefix'  => '', // text field
@@ -2025,11 +2025,14 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 						}
 						break;
 
+					/* Always set enable to true (= new default) */
+					case 'breadcrumbs-enable':
+						$clean[$key] = $this->defaults[$key];
+						break;
 
 					/* boolean fields */
 					case 'breadcrumbs-blog-remove':
 					case 'breadcrumbs-boldlast':
-					case 'breadcrumbs-enable':
 					default:
 						$clean[$key] = ( isset( $dirty[$key] ) ? self::validate_bool( $dirty[$key] ) : false );
 						break;
@@ -2079,12 +2082,17 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 		 * @return  array            Cleaned option
 		 */
 		protected function clean_option( $option_value, $current_version = null, $all_old_option_values = null ) {
-			
+
 			/* Make sure the old fall-back defaults for empty option keys are now added to the option */
 			if ( isset( $current_version ) && version_compare( $current_version, '1.5.3', '<' ) ) {
 				if ( has_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ) ) === false ) {
 					add_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ), 3 );
 				}
+			}
+			
+			/* Breadcrumbs are now always enabled */
+			if ( isset( $current_version ) && version_compare( $current_version, '1.5.3', '<' ) ) {
+				$option_value['breadcrumbs-enable'] = $this->defaults['breadcrumbs-enable'];
 			}
 
 			/* Make sure the values of the variable option key options are cleaned as they
