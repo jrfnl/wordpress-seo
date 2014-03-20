@@ -2090,11 +2090,6 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 				}
 			}
 			
-			/* Breadcrumbs are now always enabled */
-			if ( isset( $current_version ) && version_compare( $current_version, '1.5.3', '<' ) ) {
-				$option_value['breadcrumbs-enable'] = $this->defaults['breadcrumbs-enable'];
-			}
-
 			/* Make sure the values of the variable option key options are cleaned as they
 		 	   may be retained and would not be cleaned/validated then */
 			if ( is_array( $option_value ) && $option_value !== array() ) {
