@@ -49,10 +49,14 @@ function wpseo_do_upgrade() {
 		add_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ), 3 );
 	}
 	
-	/* Breadcrumb_enable is now always on */
-	/* Make sure empty maintax/mainpt strings will convert to 0 */
+
 	if ( version_compare( $option_wpseo['version'], '1.4.25', '>' ) && version_compare( $option_wpseo['version'], '1.5.3', '<' ) ) {
+		/* Make sure empty maintax/mainpt strings will convert to 0 */
+		/* Breadcrumb_enable is now always on */
 		WPSEO_Options::clean_up( 'wpseo_internallinks', $option_wpseo['version'] );
+
+		/* Remove slashes from taxonomy meta texts */
+		WPSEO_Options::clean_up( 'wpseo_taxonomy_meta', $option_wpseo['version'] );
 	}
 
 	// Make sure version nr gets updated for any version without specific upgrades
