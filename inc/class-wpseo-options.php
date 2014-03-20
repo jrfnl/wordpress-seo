@@ -900,7 +900,7 @@ if ( ! class_exists( 'WPSEO_Option_Wpseo' ) ) {
 							$meta = $dirty[$key];
 							if ( strpos( $meta, 'content=' ) ) {
 								// Make sure we only have the real key, not a complete meta tag
-								preg_match( '`content=([\'"])([^\'"]+)\1`', $meta, $match );
+								preg_match( '`content=([\'"])?([^\'"> ]+)(?:\1|[ />])`', $meta, $match );
 								if ( isset( $match[2] ) ) {
 									$meta = $match[2];
 								}
@@ -1966,7 +1966,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 						if ( isset( $dirty[$key] ) ) {
 							if ( $taxonomies !== array() && in_array( $dirty[$key], $taxonomies, true ) ) {
 								$clean[$key] = $dirty[$key];
-							} elseif ( (string) $dirty[$key] === '0' ) {
+							} elseif ( (string) $dirty[$key] === '0' || (string) $dirty[$key] === '' ) {
 								$clean[$key] = 0;
 							} elseif ( sanitize_title_with_dashes( $dirty[$key] ) === $dirty[$key] ) {
 								// Allow taxonomies which may not be registered yet
@@ -1998,7 +1998,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 						if ( isset( $dirty[$key] ) ) {
 							if ( $allowed_post_types !== array() && in_array( $dirty[$key], $allowed_post_types, true ) ) {
 								$clean[$key] = $dirty[$key];
-							} elseif ( (string) $dirty[$key] === '0' ) {
+							} elseif ( (string) $dirty[$key] === '0' || (string) $dirty[$key] === '' ) {
 								$clean[$key] = 0;
 							} elseif ( sanitize_key( $dirty[$key] ) === $dirty[$key] ) {
 								// Allow taxonomies which may not be registered yet
@@ -2084,7 +2084,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 		protected function clean_option( $option_value, $current_version = null, $all_old_option_values = null ) {
 
 			/* Make sure the old fall-back defaults for empty option keys are now added to the option */
-			if ( isset( $current_version ) && version_compare( $current_version, '1.5.3', '<' ) ) {
+			if ( isset( $current_version ) && version_compare( $current_version, '1.5.2.3', '<' ) ) {
 				if ( has_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ) ) === false ) {
 					add_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ), 3 );
 				}
@@ -2113,7 +2113,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 
 							if ( $taxonomies !== array() && in_array( $value, $taxonomies, true ) ) {
 								$option_value[$key] = $value;
-							} elseif ( (string) $value === '0' ) {
+							} elseif ( (string) $value === '0' || (string) $dirty[$key] === '' ) {
 								$option_value[$key] = 0;
 							} elseif ( sanitize_title_with_dashes( $value ) === $value ) {
 								// Allow taxonomies which may not be registered yet
@@ -2127,7 +2127,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 						case 'taxonomy-':
 							if ( $allowed_post_types !== array() && in_array( $value, $allowed_post_types, true ) ) {
 								$option_value[$key] = $value;
-							} elseif ( (string) $value === '0' ) {
+							} elseif ( (string) $value === '0' || (string) $dirty[$key] === '' ) {
 								$option_value[$key] = 0;
 							} elseif ( sanitize_key( $option_value[$key] ) === $option_value[$key] ) {
 								// Allow post types which may not be registered yet
@@ -3561,7 +3561,7 @@ if ( ! class_exists( 'WPSEO_Options' ) ) {
 		/**
 		 * Correct the inadvertent removal of the fallback to default values from the breadcrumbs
 		 *
-		 * @since 1.5.3
+		 * @since 1.5.2.3
 		 */
 		public static function bring_back_breadcrumb_defaults() {
 			if ( isset( self::$option_instances['wpseo_internallinks'] ) ) {
