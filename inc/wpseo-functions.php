@@ -50,10 +50,6 @@ function wpseo_do_upgrade() {
 	}
 	
 	/* Breadcrumb_enable is now always on */
-	if ( version_compare( $option_wpseo['version'], '1.4.25', '>' ) && version_compare( $option_wpseo['version'], '1.5.3', '<' ) ) {
-		WPSEO_Options::clean_up( 'wpseo_internallinks', $option_wpseo['version'] );
-	}
-
 	/* Make sure empty maintax/mainpt strings will convert to 0 */
 	if ( version_compare( $option_wpseo['version'], '1.4.25', '>' ) && version_compare( $option_wpseo['version'], '1.5.3', '<' ) ) {
 		WPSEO_Options::clean_up( 'wpseo_internallinks', $option_wpseo['version'] );
