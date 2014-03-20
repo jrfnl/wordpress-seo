@@ -58,6 +58,12 @@ function wpseo_do_upgrade() {
 		/* Remove slashes from taxonomy meta texts */
 		WPSEO_Options::clean_up( 'wpseo_taxonomy_meta', $option_wpseo['version'] );
 	}
+	
+	if ( version_compare( $option_wpseo['version'], '1.5.3', '<' ) ) {
+		/* Breadcrumb_enable is now always on */
+		WPSEO_Options::clean_up( 'wpseo_internallinks', $option_wpseo['version'] );
+
+	}
 
 	// Make sure version nr gets updated for any version without specific upgrades
 	$option_wpseo = get_option( 'wpseo' ); // re-get to make sure we have the latest version
