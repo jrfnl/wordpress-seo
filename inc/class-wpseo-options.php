@@ -1945,6 +1945,12 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 				$switch_key = $this->get_switch_key( $key );
 
 				switch ( $switch_key ) {
+					/* Always set enable to true (= new default) */
+					case 'breadcrumbs-enable':
+						$clean[$key] = $this->defaults[$key];
+						break;
+
+
 					/* text fields */
 					case 'breadcrumbs-404crumb':
 					case 'breadcrumbs-archiveprefix':
@@ -2025,11 +2031,6 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 						}
 						break;
 
-					/* Always set enable to true (= new default) */
-					case 'breadcrumbs-enable':
-						$clean[$key] = $this->defaults[$key];
-						break;
-
 					/* boolean fields */
 					case 'breadcrumbs-blog-remove':
 					case 'breadcrumbs-boldlast':
@@ -2089,7 +2090,7 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 					add_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ), 3 );
 				}
 			}
-			
+
 			/* Make sure the values of the variable option key options are cleaned as they
 		 	   may be retained and would not be cleaned/validated then */
 			if ( is_array( $option_value ) && $option_value !== array() ) {
