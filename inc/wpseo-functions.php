@@ -49,7 +49,7 @@ function wpseo_do_upgrade() {
 			add_action( 'init', array( 'WPSEO_Options', 'bring_back_breadcrumb_defaults' ), 3 );
 		}
 		
-	
+
 		if ( version_compare( $option_wpseo['version'], '1.4.25', '>' ) && version_compare( $option_wpseo['version'], '1.5.2.4', '<' ) ) {
 			/* Make sure empty maintax/mainpt strings will convert to 0 */
 			WPSEO_Options::clean_up( 'wpseo_internallinks', $option_wpseo['version'] );
@@ -103,6 +103,12 @@ if ( ! function_exists( 'yoast_breadcrumb' ) ) {
 	 * @return string
 	 */
 	function yoast_breadcrumb( $before = '', $after = '', $display = true ) {
+		/* Emulate genesis settings for those users using their themes */
+		if( function_exists( 'genesis' ) ) {
+			$before = ( $before === '' ) ? '<div class="breadcrumb">' : $before;
+			$after  = ( $after === '' ) ? '</div>' : $after;
+		}
+
 		return WPSEO_Breadcrumbs::breadcrumb( $before, $after, $display );
 	}
 }

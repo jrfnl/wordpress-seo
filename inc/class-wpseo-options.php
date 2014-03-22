@@ -1893,6 +1893,12 @@ if ( ! class_exists( 'WPSEO_Option_InternalLinks' ) ) {
 			$this->defaults['breadcrumbs-archiveprefix'] = __( 'Archives for', 'wordpress-seo' );
 			$this->defaults['breadcrumbs-home']          = __( 'Home', 'wordpress-seo' );
 			$this->defaults['breadcrumbs-searchprefix']  = __( 'You searched for', 'wordpress-seo' );
+
+			/* Emulate genesis settings for those users using their themes */
+			// @todo translation domain needs checking
+			if( function_exists( 'genesis' ) ) {
+				$this->defaults['breadcrumbs-prefix']  = __( 'You are here:', 'genesis' );
+			}
 		}
 
 
