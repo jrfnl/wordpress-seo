@@ -114,10 +114,15 @@ if ( ! class_exists( 'WPSEO_Breadcrumbs' ) ) {
 			$this->wrap_breadcrumb( );
 		}
 
+
 		/**
 		 * Get breadcrumb string using the singleton instance of this class
 		 *
-		 * @return object
+		 * @param string $before
+		 * @param string $after
+		 * @param bool   $display
+		 *
+		 * @return bool|object
 		 */
 		public static function breadcrumb( $before = '', $after = '', $display = true ) {
 			if ( ! ( self::$instance instanceof self ) ) {
@@ -717,14 +722,16 @@ if ( ! class_exists( 'WPSEO_Breadcrumbs' ) ) {
 		/**
 		 * Create a breadcrumb element string
 		 *
-		 * @param	array	$link	Link info array containing the keys:
-		 *							'text'	=> (string) link text
-		 *							'url'	=> (string) link url
-		 *							(optional) 'allow_html'	=> (bool) whether to (not) escape html in the link text
-		 *							This prevents html stripping from the text strings set in the
-		 *							WPSEO -> Internal Links options page
+		 * @param    array $link      Link info array containing the keys:
+		 *                            'text'    => (string) link text
+		 *                            'url'    => (string) link url
+		 *                            (optional) 'allow_html'    => (bool) whether to (not) escape html in the link text
+		 *                            This prevents html stripping from the text strings set in the
+		 *                            WPSEO -> Internal Links options page
 		 *
-		 * @return	string
+		 * @param     int     $i      current breadcrumb nr
+		 *
+		 * @return    string
 		 */
 		private function crumb_to_link( $link, $i ) {
 			global $paged; // @todo ? -> only works for archives, not for paged articles
@@ -851,12 +858,17 @@ if ( ! class_exists( 'WPSEO_Breadcrumbs' ) ) {
 			self::breadcrumb( '<div id="wpseobreadcrumb">', '</div>' );
 		}
 
+
 		/**
 		 * Take the links array and return a full breadcrumb string.
 		 *
 		 * @deprecated 1.5.2.3
 		 *
-		 * @return	string
+		 * @param        $links
+		 * @param string $wrapper
+		 * @param string $element
+		 *
+		 * @return    string
 		 */
 		public function create_breadcrumbs_string( $links, $wrapper = 'span', $element = 'span' ) {
 			_deprecated_function( __CLASS__ . '::' . __METHOD__, 'WPSEO 1.5.2.3', 'yoast_breadcrumbs' );
