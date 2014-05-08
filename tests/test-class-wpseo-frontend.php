@@ -11,6 +11,10 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 		self::$class_instance = new WPSEO_Frontend;
 	}
 
+	public function tearDown() {
+		ob_clean();
+	}
+
     /**
      * @covers WPSEO_Frontend::is_home_posts_page
      */
@@ -33,16 +37,49 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
      * @covers WPSEO_Frontend::is_home_static_page
      */
 	public function test_is_home_static_page() {
-		$expected = ( is_front_page() && 'page' == get_option( 'show_on_front' ) && is_page( get_option( 'page_on_front' ) ) );
-		$this->assertEquals( $expected, self::$class_instance->is_home_static_page() );
+
+		// on front page
+		$this->go_to_home();
+		$this->assertFalse( self::$class_instance->is_home_static_page() );
+
+		// on front page and show_on_front = page
+		update_option( 'show_on_front', 'page' );
+		$this->assertFalse( self::$class_instance->is_home_static_page() );
+
+		// create page and set it as front page
+		$post_id = $this->factory->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'page_on_front', $post_id );
+		$this->go_to( get_permalink( $post_id ) );
+
+		// on front page, show_on_front = page and on static page
+		$this->assertTrue( self::$class_instance->is_home_static_page() );
+
+		// go to differen post but preserve previous options
+		$post_id = $this->factory->post->create();
+		$this->go_to( get_permalink( $post_id ) );
+
+		// options set but not on front page, should return false
+		$this->assertFalse( self::$class_instance->is_home_static_page() );
 	}
 
     /**
      * @covers WPSEO_Frontend::is_posts_page
      */
 	public function test_is_posts_page() {
-		$expected = ( is_home() && 'page' == get_option( 'show_on_front' ) );
-		$this->assertEquals( $expected, self::$class_instance->is_posts_page() );
+
+		// on home with show_on_front != page
+		update_option( 'show_on_front', 'something' );
+		$this->go_to_home();
+		$this->assertFalse( self::$class_instance->is_posts_page() );
+
+		// on home with show_on_front = page
+		update_option( 'show_on_front', 'page' );
+		$this->assertTrue( self::$class_instance->is_posts_page() );
+
+		// go to different post but preserve previous options
+		$post_id = $this->factory->post->create();
+		$this->go_to( get_permalink( $post_id ) );
+		$this->assertFalse( self::$class_instance->is_posts_page() );
 	}
 
     /**
@@ -137,14 +174,24 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
      * @covers WPSEO_Frontend::get_default_title
      */
 	public function test_get_default_title() {
-		// @todo
+		// TODO
 	}
 
     /**
      * @covers WPSEO_Frontend::add_paging_to_title
      */
 	public function test_add_paging_to_title() {
-		// @todo
+		$input = 'Initial title';
+
+		// test without paged query var set
+		$expected = $input;
+		$this->assertEquals( $input, self::$class_instance->add_paging_to_title('', '', $input ) );
+
+		// test with paged set
+		set_query_var( 'paged', 2 );
+		global $wp_query;
+		$expected = self::$class_instance->add_to_title( '', '', $input, $wp_query->query_vars['paged'] . '/' . $wp_query->max_num_pages );
+		$this->assertEquals( $expected, self::$class_instance->add_paging_to_title( '', '', $input) );
 	}
 
     /**
@@ -284,6 +331,10 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 
 		// go to category page
 		$category_id = wp_create_category( "Category Name" );
+
+		// add posts to category
+		$this->factory->post->create_many( 6, array( 'post_category' => array( $category_id ) ) );
+
 		$category_link = get_category_link( $category_id );
 		$this->go_to( $category_link );
 
@@ -297,18 +348,18 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 			$expected = 'noindex,follow';
 			self::$class_instance->options['noindex-tax-category'] = true;
 			$this->assertEquals( $expected, self::$class_instance->robots() );
+		
+			// clean-up
+			self::$class_instance->options['noindex-tax-category'] = false;
+
+			// test subpages of category archives
+			update_site_option( 'posts_per_page', 1 );
+			self::$class_instance->options['noindex-subpages-wpseo'] = true;
+			$this->go_to( add_query_arg( array( 'paged' => 2 ), $category_link ) );
+
+			$expected = 'noindex,follow';
+			$this->assertEquals( $expected, self::$class_instance->robots() );
 		}
-
-		// clean-up
-		self::$class_instance->options['noindex-tax-category'] = false;
-
-		// test subpages of category archives
-		self::$class_instance->options['noindex-subpages-wpseo'] = true;
-		$this->go_to( add_query_arg( array( 'paged' => 2 ), $category_link ) );
-
-		$expected = 'noindex,follow';
-		$this->assertEquals( $expected, self::$class_instance->robots() );
-
 		// go to author page
 		$user_id = $this->factory->user->create();
 		$this->go_to( get_author_posts_url( $user_id ) );
@@ -324,9 +375,6 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 
 		// clean-up
 		self::$class_instance->options['noindex-author-wpseo'] = false;
-
-		// clean output buffer
-		ob_clean();
 	}
 
     /**
