@@ -152,7 +152,7 @@ function wpseo_remove_capabilities() {
 		$r = get_role( $role );
 		if ( $r ) {
 			$r->remove_cap( 'wpseo_bulk_edit' );
-		}	
+		}
 	}
 }
 
@@ -164,7 +164,7 @@ function wpseo_remove_capabilities() {
  * @return string
  */
 function wpseo_replace_vars( $string, $args, $omit = array() ) {
-
+	
 	$args = (array) $args;
 
 	$string = strip_tags( $string );
@@ -183,16 +183,15 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 		'%%sep%%'          => $sep,
 		'%%sitename%%'     => get_bloginfo( 'name' ),
 		'%%sitedesc%%'     => get_bloginfo( 'description' ),
-		'%%currenttime%%'  => date( get_option( 'time_format' ) ),
-		'%%currentdate%%'  => date( get_option( 'date_format' ) ),
-		'%%currentday%%'   => date( 'j' ),
-		'%%currentmonth%%' => date( 'F' ),
-		'%%currentyear%%'  => date( 'Y' ),
+		'%%currenttime%%'  => date_i18n( get_option( 'time_format' ) ),
+		'%%currentdate%%'  => date_i18n( get_option( 'date_format' ) ),
+		'%%currentday%%'   => date_i18n( 'j' ),
+		'%%currentmonth%%' => date_i18n( 'F' ),
+		'%%currentyear%%'  => date_i18n( 'Y' ),
 	);
 
-	foreach ( $simple_replacements as $var => $repl ) {
-		$string = str_replace( $var, $repl, $string );
-	}
+	$string = str_replace( array_keys( $simple_replacements ), array_values( $simple_replacements ), $string );
+
 
 	// Let's see if we can bail early.
 	if ( strpos( $string, '%%' ) === false ) {
@@ -246,7 +245,7 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 
 	// Let's do date first as it's a bit more work to get right.
 	if ( $r->post_date != '' ) {
-		$date = mysql2date( get_option( 'date_format' ), $r->post_date );
+		$date = mysql2date( get_option( 'date_format' ), $r->post_date, true );
 	}
 	else {
 		if ( get_query_var( 'day' ) && get_query_var( 'day' ) != '' ) {
@@ -274,7 +273,7 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 		'%%term404%%'	   => sanitize_text_field( str_replace( '-', ' ', $r->term404 ) ),
 	);
 
-	if ( isset( $r->ID ) ) {
+	if ( isset( $r->ID ) && ! empty( $r->ID ) ) {
 		$replacements = array_merge(
 			$replacements, array(
 				'%%caption%%'      => $r->post_excerpt,
@@ -283,12 +282,18 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 				'%%excerpt_only%%' => strip_tags( $r->post_excerpt ),
 				'%%focuskw%%'      => WPSEO_Meta::get_value( 'focuskw', $r->ID ),
 				'%%id%%'           => $r->ID,
-				'%%modified%%'     => mysql2date( get_option( 'date_format' ), $r->post_modified ),
+				'%%modified%%'     => mysql2date( get_option( 'date_format' ), $r->post_modified, true ),
 				'%%name%%'         => get_the_author_meta( 'display_name', ! empty( $r->post_author ) ? $r->post_author : get_query_var( 'author' ) ),
 				'%%tag%%'          => wpseo_get_terms( $r->ID, 'post_tag' ),
 				'%%title%%'        => stripslashes( $r->post_title ),
 				'%%userid%%'       => ! empty( $r->post_author ) ? $r->post_author : get_query_var( 'author' ),
 			)
+		);
+	}
+
+	if ( isset( $r->cat_name ) && ! empty( $r->cat_name ) ) {
+		$replacements = array_merge(
+			$replacements, array( '%%category%%' => $r->cat_name )
 		);
 	}
 
