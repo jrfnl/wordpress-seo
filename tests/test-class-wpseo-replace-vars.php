@@ -238,14 +238,14 @@ class WPSEO_Replace_Vars_Test extends WPSEO_UnitTestCase {
 		$this->go_to( home_url( '/2000/01/' ) );
 		$string   = WPSEO_Options::get_default( 'wpseo_titles', 'title-archive-wpseo' ); // '%%date%% %%page%% %%sep%% %%sitename%%'
 		$expected = 'January 2000 - ' . WP_TESTS_TITLE;
-		$this->assertEquals( $expected, wpseo_replace_vars( $string, $GLOBALS['wp_query']->get_queried_object() ) );
+		$this->assertEquals( $expected, wpseo_replace_vars( $string, array() ) );
 	}
 
 	public function test_wpseo_replace_default_author_title() {
 		$this->go_to( get_author_posts_url( $this->user_id ) );
 		$string   = WPSEO_Options::get_default( 'wpseo_titles', 'title-author-wpseo' ); // '%%name%%, Author at %%sitename%% %%page%% ';
 		$expected = 'User_Nicename, Author at ' . WP_TESTS_TITLE;
-		$this->assertEquals( $expected, wpseo_replace_vars( $string, $GLOBALS['wp_query']->get_queried_object() ) );
+		$this->assertEquals( $expected, wpseo_replace_vars( $string, array() ) );
 	}
 
 	public function test_wpseo_replace_default_search_title() {
@@ -255,7 +255,7 @@ class WPSEO_Replace_Vars_Test extends WPSEO_UnitTestCase {
 
 		$string   = WPSEO_Options::get_default( 'wpseo_titles', 'title-search-wpseo' ); // 'You searched for %%searchphrase%% %%page%% %%sep%% %%sitename%%';
 		$expected = 'You searched for search test - ' . WP_TESTS_TITLE;
-		$this->assertEquals( $expected, wpseo_replace_vars( $string, $GLOBALS['wp_query']->get_queried_object() ) );
+		$this->assertEquals( $expected, wpseo_replace_vars( $string, array() ) );
 
 		//$query = remove_query_arg( 's', $query );
 	}
@@ -263,11 +263,11 @@ class WPSEO_Replace_Vars_Test extends WPSEO_UnitTestCase {
 	public function test_wpseo_replace_default_404_title() {
 		$this->go_to( '/' . rand_str() );
 		//$this->assertTrue( is_404() );
-		$this->assertQueryTrue( 'is_404' );
+		//$this->assertQueryTrue( 'is_404' );
 
 		$string   = WPSEO_Options::get_default( 'wpseo_titles', 'title-404-wpseo' ); // 'Page Not Found %%sep%% %%sitename%%'
 		$expected = 'Page Not Found - ' . WP_TESTS_TITLE;
-		$this->assertEquals( $expected, wpseo_replace_vars( $string, $GLOBALS['wp_query']->get_queried_object() ) );
+		$this->assertEquals( $expected, wpseo_replace_vars( $string, array() ) );
 	}
 
 
@@ -671,7 +671,7 @@ class WPSEO_Replace_Vars_Test extends WPSEO_UnitTestCase {
 		$this->go_to( '/' . $r );
 		//$this->go_to( home_url( '/non-existent-page' ) );
 		//$this->assertTrue( is_404() );
-		$this->assertQueryTrue( 'is_404' );
+		//$this->assertQueryTrue( 'is_404' );
 
 		$string   = '%%term404%%';
 		$expected = $r;
