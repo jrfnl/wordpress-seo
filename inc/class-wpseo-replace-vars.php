@@ -404,7 +404,12 @@ if ( ! class_exists( 'WPSEO_Replace_Vars' ) ) {
 				$replacement = $GLOBALS['sep'];
 			}
 
-			return $replacement;
+			/**
+			 * Filter: 'wpseo_replacements_filter_sep' - Allow customization of the separator character(s)
+			 *
+			 * @api string $replacement The current separator
+			 */
+			return apply_filters( 'wpseo_replacements_filter_sep', $replacement );
 		}
 
 		/**
