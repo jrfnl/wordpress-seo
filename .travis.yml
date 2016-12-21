@@ -2,10 +2,20 @@ language: php
 
 sudo: false
 
-branches:
-  only:
-    - master
-    - trunk
+php:
+    - 5.2
+    - 5.3
+    - 5.4
+    - 5.5
+    - 5.6
+    - 7.0
+
+env:
+  - WP_VERSION=4.7
+  - WP_VERSION=4.6
+  - WP_VERSION=4.5
+  - WP_VERSION=4.4
+  - WP_VERSION=master
 
 matrix:
   fast_finish: true
@@ -14,17 +24,15 @@ matrix:
       env: WP_VERSION=4.7 WP_MULTISITE=1 PHPLINT=1 PHPCS=1 CHECKJS=1 COVERAGE=1 TRAVIS_NODE_VERSION=node
     - php: 5.2
       env: WP_VERSION=4.6 WP_MULTISITE=1 PHPLINT=1
-    - php: 5.3
-      env: WP_VERSION=4.5
-    - php: 5.6
-      env: WP_VERSION=4.4
     # WP >= 4.7 is needed for PHP 7.1  
     - php: 7.1
       env: WP_VERSION=4.7
+    # Run against HHVM and PHP nightly.
     - php: hhvm
+      sudo: required
+      dist: trusty
+      group: edge 
       env: WP_VERSION=4.7
-    - php: 5.2
-      env: WP_VERSION=master
     - php: nightly
       env: WP_VERSION=master
   allow_failures:
